@@ -8,17 +8,20 @@ datasource db {
 }
 
 model User {
-  id               String        @id @default(uuid())
-  name             String        @db.VarChar(255)
-  email            String        @unique
-  photo            String?       @default("default.png")
-  verified         Boolean?      @default(false)
-  active           Boolean?      @default(false)
+  id               String               @id @default(uuid())
+  name             String               @db.VarChar(255)
+  email            String               @unique
+  photo            String?              @default("default.png")
+  verified         Boolean?             @default(false)
+  academic         Boolean?             
+  academic_type    AcademicEnumType?    @default(none)
+  affilation       Int?                 
+  active           Boolean?             @default(false)
   password         String
-  role             RoleEnumType? @default(user)
-  verificationCode String?       @unique
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  role             RoleEnumType?        @default(user)
+  verificationCode String?              @unique
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
   passwordResetToken String?
   passwordResetAt DateTime?
 
@@ -27,7 +30,31 @@ model User {
   @@map("users")
 }
 
+model Universities {
+  Alpha2code String?
+  Country    String?
+  Domains    String?
+  Name       String?
+  WebPages   String?
+  id         Int     @id @default(autoincrement())
+}
+
+model Whitelist {
+  id         Int        @id @default(autoincrement())
+  email      String     
+  comment    String?    
+}
+
 enum RoleEnumType {
   user
   admin
+}
+
+enum AcademicEnumType {
+  none
+  ac
+  edu
+  whitelist
+  manual
+  university_domain
 }
