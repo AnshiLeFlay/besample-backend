@@ -65,21 +65,29 @@ export const domainCheck = async (
                     index--;
                 }
 
-                if (findCount === needleDomain.length)
+                if (findCount === needleDomain.length) {
+                    prisma.$disconnect();
                     return {
                         id: univerDB[i].id,
                         name: univerDB[i].Name,
                         type: "university_domain",
                     };
+                }
             }
         }
 
         //проверяем .ac и .edu
-        if (emailDomain[emailDomain.length - 1] === "ac") return { type: "ac" };
-        if (emailDomain[emailDomain.length - 1] === "edu")
+        if (emailDomain[emailDomain.length - 1] === "ac") {
+            prisma.$disconnect();
+            return { type: "ac" };
+        }
+        if (emailDomain[emailDomain.length - 1] === "edu") {
+            prisma.$disconnect();
             return { type: "edu" };
+        }
 
         //нац домены ac. и edu.
+        //prisma.$disconnect();
         const nationalDomains = await prisma.nationalDomains.findFirst({
             where: {
                 domain: `${emailDomain[emailDomain.length - 2]}.${
@@ -89,12 +97,17 @@ export const domainCheck = async (
         });
 
         if (nationalDomains?.domain !== undefined) {
-            if (nationalDomains.domain.split(".")[0] === "ac")
+            if (nationalDomains.domain.split(".")[0] === "ac") {
+                prisma.$disconnect();
                 return { type: "ac" };
-            else return { type: "edu" };
+            } else {
+                prisma.$disconnect();
+                return { type: "edu" };
+            }
         }
 
         //проверяем whitelist
+        //prisma.$disconnect();
         const whitelist = await prisma.whitelist.findFirst({
             where: {
                 email: email,
@@ -102,10 +115,12 @@ export const domainCheck = async (
         });
 
         if (whitelist?.email !== undefined) {
+            prisma.$disconnect();
             return { type: "whitelist" };
         }
 
         //если ни одна проверка не прошла ставим тип manual
+        prisma.$disconnect();
         return { type: "manual" };
     } catch (err: any) {
         return { error: err.message, type: "error" };
