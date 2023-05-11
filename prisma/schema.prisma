@@ -8,22 +8,22 @@ datasource db {
 }
 
 model User {
-  id               String               @id @default(uuid())
-  name             String               @db.VarChar(255)
-  email            String               @unique
-  photo            String?              @default("default.png")
-  verified         Boolean?             @default(false)
-  academic         Boolean?             
-  academic_type    AcademicEnumType?    @default(none)
-  affilation       Int?                 
-  active           Boolean?             @default(false)
-  password         String
-  role             RoleEnumType?        @default(user)
-  verificationCode String?              @unique
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  id                 String            @id @default(uuid())
+  name               String            @db.VarChar(255)
+  email              String            @unique
+  photo              String?           @default("default.png")
+  verified           Boolean?          @default(false)
+  academic           Boolean?
+  academic_type      AcademicEnumType? @default(none)
+  affilation         Int?
+  active             Boolean?          @default(false)
+  password           String
+  role               RoleEnumType?     @default(user)
+  verificationCode   String?           @unique
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
   passwordResetToken String?
-  passwordResetAt DateTime?
+  passwordResetAt    DateTime?
 
   @@unique([email, verificationCode, passwordResetToken])
   @@index([email, verificationCode, passwordResetToken])
@@ -40,9 +40,15 @@ model Universities {
 }
 
 model Whitelist {
-  id         Int        @id @default(autoincrement())
-  email      String     
-  comment    String?    
+  id      Int     @id @default(autoincrement())
+  email   String
+  comment String?
+}
+
+model NationalDomains {
+  id      Int    @id @default(autoincrement())
+  country String
+  domain  String
 }
 
 enum RoleEnumType {

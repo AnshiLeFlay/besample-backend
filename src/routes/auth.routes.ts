@@ -18,12 +18,27 @@ import {
     resetPasswordSchema,
     verifyEmailSchema,
 } from "../schemas/user.schema";
+import { domainCheck } from "../utils/functions";
 
 const router = express.Router();
 
 router.post("/register", validate(registerUserSchema), registerUserHandler);
 
 router.get("/register", validate(registerUserSchema), registerUserHandler);
+
+router.get("/domaincheck", async (req, res, next) => {
+    const email: string =
+        req.query.email?.toString() !== undefined
+            ? req.query.email?.toString()
+            : "";
+    const ans = await domainCheck(email);
+
+    res.status(200).status(200).json({
+        status: "success",
+        email: email,
+        answer: ans,
+    });
+});
 
 /*
 router.get("/test", async (req, res, next) => {

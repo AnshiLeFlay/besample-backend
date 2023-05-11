@@ -80,6 +80,19 @@ export const domainCheck = async (
             return { type: "edu" };
 
         //нац домены ac. и edu.
+        const nationalDomains = await prisma.nationalDomains.findFirst({
+            where: {
+                domain: `${emailDomain[emailDomain.length - 2]}.${
+                    emailDomain[emailDomain.length - 1]
+                }`,
+            },
+        });
+
+        if (nationalDomains?.domain !== undefined) {
+            if (nationalDomains.domain.split(".")[0] === "ac")
+                return { type: "ac" };
+            else return { type: "edu" };
+        }
 
         //проверяем whitelist
         const whitelist = await prisma.whitelist.findFirst({
