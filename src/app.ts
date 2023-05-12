@@ -140,3 +140,11 @@ async function bootstrap() {
         console.log("HTTPS Server running on port 443");
     });
 }
+
+bootstrap()
+    .catch((err) => {
+        throw err;
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
