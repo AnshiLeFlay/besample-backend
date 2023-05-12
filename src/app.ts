@@ -1,7 +1,7 @@
 require("dotenv").config();
 import express, { NextFunction, Request, Response, response } from "express";
 import config from "config";
-import cors from "cors";
+//import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import validateEnv from "./utils/validateEnv";
@@ -10,7 +10,7 @@ import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import AppError from "./utils/appError";
 
-import nodemailer from "nodemailer";
+//import nodemailer from "nodemailer";
 
 //require("dotenv").config();
 
@@ -36,6 +36,37 @@ validateEnv();
 
 const prisma = new PrismaClient();
 const app = express();
+
+const cors = require("cors");
+app.use(
+    cors({
+        origin: "*",
+    })
+);
+
+//ssl
+const fs = require("fs");
+const http = require("http");
+const https = require("https");
+
+const privateKey = fs.readFileSync(
+    "/etc/letsencrypt/live/bsmpl.musorilo.ru/privkey.pem",
+    "utf8"
+);
+const certificate = fs.readFileSync(
+    "/etc/letsencrypt/live/bsmpl.musorilo.ru/cert.pem",
+    "utf8"
+);
+const ca = fs.readFileSync(
+    "/etc/letsencrypt/live/bsmpl.musorilo.ru/chain.pem",
+    "utf8"
+);
+
+const credentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca,
+};
 
 async function bootstrap() {
     // TEMPLATE ENGINE
@@ -92,15 +123,20 @@ async function bootstrap() {
     );
 
     const port = config.get<number>("port");
+    /*
     app.listen(port, () => {
         console.log(`Server on port: ${port}`);
     });
-}
+    */
 
-bootstrap()
-    .catch((err) => {
-        throw err;
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
+    const httpServer = http.createServer(app);
+    const httpsServer = https.createServer(credentials, app);
+
+    httpServer.listen(80, () => {
+        console.log("HTTP Server running on port 80");
     });
+
+    httpsServer.listen(443, () => {
+        console.log("HTTPS Server running on port 443");
+    });
+}

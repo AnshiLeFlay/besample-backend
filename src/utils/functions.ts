@@ -24,9 +24,11 @@ export const getDomainByID = async (ID: number): Promise<string> => {
         console.log(university);
 
         if (university === undefined || university === null) {
+            prisma.$disconnect();
             return "";
         }
 
+        prisma.$disconnect();
         return university.Name;
     } catch (err: any) {
         return err;
